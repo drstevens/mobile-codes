@@ -1,5 +1,5 @@
 # A script that parses the wikipedia page into JSON.
-# run wget http://en.wikipedia.org/wiki/List_of_mobile_country_codes
+# run curl -XGET https://en.wikipedia.org/wiki/Mobile_country_code
 # then this..
 import json
 import os
@@ -10,7 +10,7 @@ from mobile_codes import MNCOperator
 
 
 def parse_wikipedia():
-    with open('List_of_mobile_country_codes', 'r') as htmlfile:
+    with open('Mobile_country_code', 'r') as htmlfile:
         soup = BeautifulSoup(htmlfile)
         operators = []
 
@@ -35,18 +35,18 @@ def parse_itu():
 
 def merge_wiki_itu():
     wiki_operators = parse_wikipedia()
-    itu_operators = parse_itu()
+    # itu_operators = parse_itu()
     merged_operators = {}
 
     for operator in wiki_operators:
         operator_key = operator.mcc, operator.mnc
         merged_operators[operator_key] = operator
 
-    for operator in itu_operators:
-        operator_key = operator.mcc, operator.mnc
-        merged_operators[operator_key] = operator
+    # for operator in itu_operators:
+    #     operator_key = operator.mcc, operator.mnc
+    #     merged_operators[operator_key] = operator
 
-    return merged_operators.values()
+    return sorted(merged_operators.values(), key=lambda tup: tup[0] + "-" + tup[1])
 
 
 def write_operators(operators):
